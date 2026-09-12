@@ -35,8 +35,7 @@ def predict(message, history):
 demo = gr.ChatInterface(
     fn=predict,
     title="Alice",
-    description="La tua assistente personale sul cloud.",
-    theme="soft",
+    description="La tua assistente personale sul cloud."
 )
 
 if __name__ == "__main__":
