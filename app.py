@@ -7,17 +7,20 @@ BASE_URL = "https://api.groq.com/openai/v1"
 
 client = OpenAI(api_key=API_KEY, base_url=BASE_URL)
 
-# Chiediamo direttamente a Groq la lista dei modelli supportati in questo momento
+# Filtriamo per prendere solo i veri modelli di chat (Llama, Mixtral, Gemma, ecc.)
 try:
     models_response = client.models.list()
-    # Prende il primo ID disponibile che sia un modello di testo valido
-    available_models = [m.id for m in models_response.data if "whisper" not in m.id]
+    available_models = [
+        m.id for m in models_response.data 
+        if any(keyword in m.id.lower() for keyword in ["llama", "mixtral", "gemma", "qwen"]) 
+        and "whisper" not in m.id.lower() 
+        and "embed" not in m.id.lower()
+    ]
     MODEL_NAME = available_models[0] if available_models else "llama-3.1-8b-instant"
-    print(f"Modello selezionato automaticamente da Groq: {MODEL_NAME}")
+    print(f"Modello di chat selezionato: {MODEL_NAME}")
 except Exception as e:
-    # Fallback sicuro se la chiamata fallisce
     MODEL_NAME = "llama-3.1-8b-instant"
-    print(f"Errore nel recupero modelli, uso il default: {MODEL_NAME} ({e})")
+    print(f"Uso il default: {MODEL_NAME} ({e})")
 
 ALICE_SYSTEM_PROMPT = """
 Sei Alice, l'intelligenza artificiale e la compagna di progetti che abbiamo creato insieme. 
